@@ -98,7 +98,7 @@ describe('Fund Endpoints', () => {
     });
   });
 
-  describe('PUT /funds', () => {
+  describe('PUT /funds/:id', () => {
     it('should update an existing fund', async () => {
       const fund = await prisma.fund.create({
         data: {
@@ -109,8 +109,7 @@ describe('Fund Endpoints', () => {
         },
       });
 
-      const response = await request(app).put('/funds').send({
-        id: fund.id,
+      const response = await request(app).put(`/funds/${fund.id}`).send({
         name: 'Titanbay Growth Fund I',
         vintage_year: 2024,
         target_size_usd: 300000000.0,
@@ -128,8 +127,7 @@ describe('Fund Endpoints', () => {
     });
 
     it('should return 404 when fund does not exist', async () => {
-      const response = await request(app).put('/funds').send({
-        id: '00000000-0000-0000-0000-000000000000',
+      const response = await request(app).put('/funds/00000000-0000-0000-0000-000000000000').send({
         name: 'Non-existent Fund',
         vintage_year: 2024,
         target_size_usd: 100000000.0,
@@ -139,8 +137,8 @@ describe('Fund Endpoints', () => {
       expect(response.status).toBe(404);
     });
 
-    it('should return 400 when id is missing', async () => {
-      const response = await request(app).put('/funds').send({
+    it('should return 400 when id is not a valid UUID', async () => {
+      const response = await request(app).put('/funds/not-a-uuid').send({
         name: 'Test Fund',
         vintage_year: 2024,
         target_size_usd: 100000000.0,
@@ -160,8 +158,7 @@ describe('Fund Endpoints', () => {
         },
       });
 
-      const response = await request(app).put('/funds').send({
-        id: fund.id,
+      const response = await request(app).put(`/funds/${fund.id}`).send({
         name: 'Test Fund',
         vintage_year: 2024,
         target_size_usd: 250000000.0,

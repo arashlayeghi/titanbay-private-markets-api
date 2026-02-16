@@ -25,7 +25,8 @@ export const fundController = {
   },
 
   update: async (req: Request, res: Response): Promise<void> => {
-    const fund = await fundService.update(req.body as UpdateFundInput);
+    const id: string = req.params.id as string;
+    const fund = await fundService.update(id, req.body as UpdateFundInput);
     if (!fund) {
       ApiResponse.notFound(res, 'Fund not found');
       return;

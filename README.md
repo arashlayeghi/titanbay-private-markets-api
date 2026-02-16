@@ -8,7 +8,7 @@ Built as a take-home assessment for the Software Engineer role at [Titanbay](htt
 
 - **Runtime:** Node.js 24 with TypeScript
 - **Framework:** Express.js 5
-- **Database:** PostgreSQL 16 with Prisma ORM v7
+- **Database:** PostgreSQL 17 with Prisma ORM v7
 - **Validation:** Zod v4
 - **Testing:** Vitest + Supertest (TDD approach)
 - **Tooling:** ESLint, Prettier, Husky, lint-staged, Docker Compose
@@ -20,6 +20,17 @@ Built as a take-home assessment for the Software Engineer role at [Titanbay](htt
 - npm
 
 ## Getting Started
+
+### Quick Setup
+```bash
+git clone https://github.com/arashlayeghi/titanbay-private-markets-api.git
+cd titanbay-private-markets-api
+nvm use
+./scripts/setup.sh
+npm run dev
+```
+
+### Manual Setup
 ```bash
 # Clone the repository
 git clone https://github.com/arashlayeghi/titanbay-private-markets-api.git
@@ -71,7 +82,7 @@ Full specification: [Titanbay Private Markets API v1.0.0](https://storage.google
 |--------|---------------|------------------------|
 | GET    | /funds        | List all funds         |
 | POST   | /funds        | Create a new fund      |
-| PUT    | /funds        | Update an existing fund|
+| PUT    | /funds/:id    | Update an existing fund|
 | GET    | /funds/:id    | Get a specific fund    |
 
 ### Investors
@@ -131,7 +142,7 @@ This structure keeps each layer focused on a single responsibility. Controllers 
 
 ## Assumptions
 
-- The `PUT /funds` endpoint requires all fields including `id` in the request body (as per the API spec), rather than using a URL parameter
+- The API spec defines `PUT /funds` with the fund `id` in the request body. I chose to use `PUT /funds/:id` instead, as REST convention identifies resources via the URL. This also prevents any ambiguity around whether the `id` itself can be updated — it cannot, as it's a server-generated UUID. The request body contains only the mutable fields.
 - `investment_date` is a date-only field (no time component), stored as a PostgreSQL `DATE` type
 - Investor email uniqueness is enforced — attempting to create a duplicate returns `409 Conflict`
 - Fund and investor existence is validated before creating an investment — returns `404` if either doesn't exist
@@ -152,3 +163,10 @@ This structure keeps each layer focused on a single responsibility. Controllers 
 | `npm run db:migrate` | Run database migrations            |
 | `npm run db:seed`    | Seed the database                  |
 | `npm run db:studio`  | Open Prisma Studio                 |
+
+## Git Hooks
+
+Pre-configured with Husky and lint-staged:
+
+- **Pre-commit** — Runs Prettier and ESLint on staged `.ts` files
+- **Pre-push** — Runs the full test suite to prevent broken code from reaching the remote

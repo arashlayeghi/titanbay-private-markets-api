@@ -9,7 +9,11 @@ router.get('/', fundController.findAll);
 
 router.post('/', validateRequest({ body: createFundSchema }), fundController.create);
 
-router.put('/', validateRequest({ body: updateFundSchema }), fundController.update);
+router.put(
+  '/:id',
+  validateRequest({ params: uuidParamSchema, body: updateFundSchema }),
+  fundController.update,
+);
 
 router.get('/:id', validateRequest({ params: uuidParamSchema }), fundController.findById);
 
