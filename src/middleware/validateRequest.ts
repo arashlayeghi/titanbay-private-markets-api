@@ -1,21 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import { ApiResponse } from '../utils/apiResponse';
 
 interface ValidationSchemas {
   body?: z.ZodType;
   params?: z.ZodType;
 }
-
-interface ValidationErrorDetail {
-  field: string;
-  message: string;
-}
-
-const formatZodErrors = (issues: z.core.$ZodIssue[]): ValidationErrorDetail[] =>
-  issues.map((issue) => ({
-    field: issue.path.join('.'),
-    message: issue.message,
-  }));
 
 export const validateRequest = (schemas: ValidationSchemas) => {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -29,10 +19,14 @@ export const validateRequest = (schemas: ValidationSchemas) => {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({
-          error: 'Validation failed',
-          details: formatZodErrors(error.issues),
-        });
+        ApiResponse.badRequest(
+          res,
+          'Validation failed',
+          error.issues.map((issue) => ({
+            field: issue.path.join('.'),
+            message: issue.message,
+          })),
+        );
         return;
       }
       next(error);
