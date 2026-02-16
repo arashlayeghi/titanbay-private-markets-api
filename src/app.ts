@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import { fundRoutes } from './routes/fund.routes';
 import { investorRoutes } from './routes/investor.routes';
+import { investmentRoutes } from './routes/investment.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app: Application = express();
@@ -15,6 +16,7 @@ app.get('/health', (_req: Request, res: Response) => {
 // Routes
 app.use('/funds', fundRoutes);
 app.use('/investors', investorRoutes);
+app.use('/funds/:fund_id/investments', investmentRoutes);
 
 // Global error handler (must be after routes)
 app.use(errorHandler);

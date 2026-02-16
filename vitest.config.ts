@@ -8,6 +8,7 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     testTimeout: 30000,
     hookTimeout: 30000,
+    fileParallelism: false,
     env: {
       DATABASE_URL: 'postgresql://titanbay:titanbay_dev@localhost:5432/titanbay_test?schema=public',
       NODE_ENV: 'test',
