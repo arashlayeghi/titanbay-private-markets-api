@@ -8,7 +8,7 @@ const connectionString: string = process.env.DATABASE_URL!;
 const adapter: PrismaPg = new PrismaPg({ connectionString });
 const prisma: PrismaClient = new PrismaClient({ adapter });
 
-async function main(): Promise<void> {
+const main = async (): Promise<void> => {
   // Clean existing data
   await prisma.investment.deleteMany();
   await prisma.investor.deleteMany();
@@ -90,7 +90,7 @@ async function main(): Promise<void> {
   console.info(`  Funds: ${fund1.name}, ${fund2.name}`);
   console.info(`  Investors: ${investor1.name}, ${investor2.name}, ${investor3.name}`);
   console.info('  Investments: 3 commitments created');
-}
+};
 
 main()
   .then(async () => {

@@ -20,6 +20,7 @@ interface FundResponse {
   created_at: Date;
 }
 
+/** Converts Prisma Decimal to a JavaScript number for JSON serialisation */
 const formatFund = (fund: {
   id: string;
   name: string;
@@ -33,12 +34,14 @@ const formatFund = (fund: {
 });
 
 export const fundService = {
-  async findAll(): Promise<FundResponse[]> {
+  /** Retrieves all funds with formatted monetary values */
+  findAll: async (): Promise<FundResponse[]> => {
     const funds = await prisma.fund.findMany({ select: fundSelect });
     return funds.map(formatFund);
   },
 
-  async findById(id: string): Promise<FundResponse | null> {
+  /** Finds a fund by UUID, returns null if not found */
+  findById: async (id: string): Promise<FundResponse | null> => {
     const fund = await prisma.fund.findUnique({
       where: { id },
       select: fundSelect,
@@ -46,7 +49,8 @@ export const fundService = {
     return fund ? formatFund(fund) : null;
   },
 
-  async create(data: CreateFundInput): Promise<FundResponse> {
+  /** Creates a new fund and returns the formatted result */
+  create: async (data: CreateFundInput): Promise<FundResponse> => {
     const fund = await prisma.fund.create({
       data: {
         name: data.name,
@@ -59,7 +63,8 @@ export const fundService = {
     return formatFund(fund);
   },
 
-  async update(data: UpdateFundInput): Promise<FundResponse | null> {
+  /** Updates a fund by ID. Returns null if fund not found (Prisma P2025) */
+  update: async (data: UpdateFundInput): Promise<FundResponse | null> => {
     try {
       const fund = await prisma.fund.update({
         where: { id: data.id },
