@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: titanbay-db
+    restart: unless-stopped
+    # Local development only - not for production use 
+    # (which the credentails should fetch from env vars instead of hard coding)
+    environment:
+      POSTGRES_USER: titanbay
+      POSTGRES_PASSWORD: titanbay_dev
+      POSTGRES_DB: titanbay
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh
+
+volumes:
+  postgres_data:
