@@ -4,6 +4,7 @@ import { fundRoutes } from './routes/fund.routes';
 import { investorRoutes } from './routes/investor.routes';
 import { investmentRoutes } from './routes/investment.routes';
 import { errorHandler } from './middleware/errorHandler';
+import { ApiResponse } from './utils/apiResponse';
 import { config } from './config';
 
 const app: Application = express();
@@ -24,7 +25,12 @@ app.use('/funds', fundRoutes);
 app.use('/investors', investorRoutes);
 app.use('/funds/:fund_id/investments', investmentRoutes);
 
-// Global error handler (must be after routes)
+// 404 handler for undefined routes
+app.use((_req: Request, res: Response) => {
+  ApiResponse.notFound(res, 'Route not found');
+});
+
+// Global error handler (must be last)
 app.use(errorHandler);
 
 export { app };
