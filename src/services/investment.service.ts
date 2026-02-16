@@ -10,6 +10,7 @@ interface InvestmentResponse {
   investment_date: string;
 }
 
+/** Converts Decimal to number and Date to YYYY-MM-DD string */
 const formatInvestment = (investment: {
   id: string;
   investor_id: string;
@@ -23,6 +24,7 @@ const formatInvestment = (investment: {
 });
 
 export const investmentService = {
+  /** Retrieves all investments for a given fund. Returns null if fund not found. */
   findAllByFundId: async (fundId: string): Promise<InvestmentResponse[] | null> => {
     const fund = await prisma.fund.findUnique({ where: { id: fundId } });
     if (!fund) return null;
@@ -33,6 +35,11 @@ export const investmentService = {
     return investments.map(formatInvestment);
   },
 
+  /**
+   * Creates an investment linking an investor to a fund.
+   * Validates both fund and investor existence before creation.
+   * @throws NotFoundError if fund or investor does not exist
+   */
   create: async (
     fundId: string,
     data: CreateInvestmentInput,

@@ -1,10 +1,10 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     container_name: titanbay-db
     restart: unless-stopped
-    # Local development only - not for production use 
-    # (which the credentails should fetch from env vars instead of hard coding)
+    # Local development only - not for production use
+    # (credentials should be loaded from env vars in production)
     environment:
       POSTGRES_USER: titanbay
       POSTGRES_PASSWORD: titanbay_dev

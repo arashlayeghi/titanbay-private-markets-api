@@ -20,6 +20,17 @@ Built as a take-home assessment for the Software Engineer role at [Titanbay](htt
 - npm
 
 ## Getting Started
+
+### Quick Setup
+```bash
+git clone https://github.com/arashlayeghi/titanbay-private-markets-api.git
+cd titanbay-private-markets-api
+nvm use
+./scripts/setup.sh
+npm run dev
+```
+
+### Manual Setup
 ```bash
 # Clone the repository
 git clone https://github.com/arashlayeghi/titanbay-private-markets-api.git
