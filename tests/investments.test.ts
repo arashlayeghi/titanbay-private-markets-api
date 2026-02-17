@@ -156,5 +156,65 @@ describe('Investment Endpoints', () => {
 
       expect(response.status).toBe(400);
     });
+
+    it('should return 400 when investing in a closed fund', async () => {
+      const closedFund = await prisma.fund.create({
+        data: {
+          name: 'Closed Fund',
+          vintage_year: 2023,
+          target_size_usd: 100000000.0,
+          status: 'Closed',
+        },
+      });
+
+      const response = await request(app).post(`/funds/${closedFund.id}/investments`).send({
+        investor_id: investorId,
+        amount_usd: 50000000.0,
+        investment_date: '2024-09-22',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Cannot invest in a closed fund');
+    });
+
+    it('should return 400 when investment exceeds fund target size', async () => {
+      const smallFund = await prisma.fund.create({
+        data: {
+          name: 'Small Fund',
+          vintage_year: 2024,
+          target_size_usd: 1000000.0,
+          status: 'Fundraising',
+        },
+      });
+
+      const response = await request(app).post(`/funds/${smallFund.id}/investments`).send({
+        investor_id: investorId,
+        amount_usd: 2000000.0,
+        investment_date: '2024-09-22',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain("exceeds fund's remaining capacity");
+    });
+
+    it('should return 400 when cumulative investments exceed fund target size', async () => {
+      await prisma.investment.create({
+        data: {
+          investor_id: investorId,
+          fund_id: fundId,
+          amount_usd: 200000000.0,
+          investment_date: new Date('2024-03-15'),
+        },
+      });
+
+      const response = await request(app).post(`/funds/${fundId}/investments`).send({
+        investor_id: investorId,
+        amount_usd: 100000000.0,
+        investment_date: '2024-09-22',
+      });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain("exceeds fund's remaining capacity");
+    });
   });
 });

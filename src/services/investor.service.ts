@@ -1,6 +1,7 @@
 import { InvestorType } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { CreateInvestorInput } from '../validators/investor.validator';
+import { ConflictError } from '../errors';
 
 interface InvestorResponse {
   id: string;
@@ -51,9 +52,7 @@ export const investorService = {
     });
 
     if (existing) {
-      const error = new Error('Investor with this email already exists');
-      error.name = 'ConflictError';
-      throw error;
+      throw new ConflictError('Investor with this email already exists');
     }
 
     const investor = await prisma.investor.create({

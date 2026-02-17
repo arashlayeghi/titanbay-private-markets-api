@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { CreateInvestmentInput } from '../validators/investment.validator';
+import { NotFoundError, BadRequestError } from '../errors';
 
 interface InvestmentResponse {
   id: string;
@@ -37,8 +38,13 @@ export const investmentService = {
 
   /**
    * Creates an investment linking an investor to a fund.
-   * Validates both fund and investor existence before creation.
+   * Validates:
+   * - Fund exists
+   * - Fund is not closed
+   * - Investment does not exceed fund's remaining capacity (target_size_usd)
+   * - Investor exists
    * @throws NotFoundError if fund or investor does not exist
+   * @throws BadRequestError if fund is closed or investment exceeds target size
    */
   create: async (
     fundId: string,
@@ -46,18 +52,33 @@ export const investmentService = {
   ): Promise<InvestmentResponse | null> => {
     const fund = await prisma.fund.findUnique({ where: { id: fundId } });
     if (!fund) {
-      const error = new Error('Fund not found');
-      error.name = 'NotFoundError';
-      throw error;
+      throw new NotFoundError('Fund not found');
+    }
+
+    if (fund.status === 'Closed') {
+      throw new BadRequestError('Cannot invest in a closed fund');
+    }
+
+    const existingInvestments = await prisma.investment.aggregate({
+      where: { fund_id: fundId },
+      _sum: { amount_usd: true },
+    });
+
+    const totalCommitted = Number(existingInvestments._sum.amount_usd ?? 0);
+    const targetSize = Number(fund.target_size_usd);
+    const remaining = targetSize - totalCommitted;
+
+    if (data.amount_usd > remaining) {
+      throw new BadRequestError(
+        `Investment of ${data.amount_usd} exceeds fund's remaining capacity of ${remaining} (target: ${targetSize}, committed: ${totalCommitted})`,
+      );
     }
 
     const investor = await prisma.investor.findUnique({
       where: { id: data.investor_id },
     });
     if (!investor) {
-      const error = new Error('Investor not found');
-      error.name = 'NotFoundError';
-      throw error;
+      throw new NotFoundError('Investor not found');
     }
 
     const investment = await prisma.investment.create({

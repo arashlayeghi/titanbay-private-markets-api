@@ -22,6 +22,11 @@ export const ApiResponse = {
     res.status(201).json(data);
   },
 
+  /** Send an error response with a given status code */
+  error: (res: Response, statusCode: number, message: string): void => {
+    res.status(statusCode).json({ error: message });
+  },
+
   /** Send a not found error (404) */
   notFound: (res: Response, message = 'Resource not found'): void => {
     res.status(404).json({ error: message });
