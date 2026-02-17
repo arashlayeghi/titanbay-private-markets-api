@@ -21,7 +21,7 @@ Built as a take-home assessment for the Software Engineer role at [Titanbay](htt
 
 ## Getting Started
 
-### Quick Setup
+### Quick Setup (Recommended)
 ```bash
 git clone https://github.com/arashlayeghi/titanbay-private-markets-api.git
 cd titanbay-private-markets-api
@@ -50,6 +50,12 @@ cp .env.example .env
 
 # Run database migrations
 npx prisma migrate dev
+
+# Generate Prisma client
+npx prisma generate
+
+# Apply migrations to test database
+DATABASE_URL=postgresql://titanbay:titanbay_dev@localhost:5432/titanbay_test?schema=public npx prisma migrate deploy
 
 # Seed the database (optional)
 npm run db:seed
@@ -143,6 +149,7 @@ This structure keeps each layer focused on a single responsibility. Controllers 
 ## Assumptions
 
 - The API spec defines `PUT /funds` with the fund `id` in the request body. I chose to use `PUT /funds/:id` instead, as REST convention identifies resources via the URL. This also prevents any ambiguity around whether the `id` itself can be updated — it cannot, as it's a server-generated UUID. The request body contains only the mutable fields.
+- All request body fields are treated as required for both POST and PUT endpoints. This aligns with PUT semantics (full resource replacement rather than partial update, which would be PATCH) and POST semantics (all fields needed to create a valid resource). The API spec examples consistently include all fields in every request body.
 - `investment_date` is a date-only field (no time component), stored as a PostgreSQL `DATE` type
 - Investor email uniqueness is enforced — attempting to create a duplicate returns `409 Conflict`
 - Fund and investor existence is validated before creating an investment — returns `404` if either doesn't exist
