@@ -97,5 +97,16 @@ describe('Investor Endpoints', () => {
 
       expect(response.status).toBe(409);
     });
+
+    it('should return 400 when request body contains unrecognized fields', async () => {
+      const response = await request(app).post('/investors').send({
+        name: 'Test Investor',
+        investor_type: 'Institution',
+        email: 'test@example.com',
+        unexpected_field: 'should not be here',
+      });
+
+      expect(response.status).toBe(400);
+    });
   });
 });

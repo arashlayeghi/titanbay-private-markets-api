@@ -145,5 +145,16 @@ describe('Investment Endpoints', () => {
 
       expect(response.status).toBe(400);
     });
+
+    it('should return 400 when request body contains unrecognized fields', async () => {
+      const response = await request(app).post(`/funds/${fundId}/investments`).send({
+        investor_id: investorId,
+        amount_usd: 50000000.0,
+        investment_date: '2024-09-22',
+        unexpected_field: 'should not be here',
+      });
+
+      expect(response.status).toBe(400);
+    });
   });
 });

@@ -2,7 +2,7 @@
 
 RESTful API for managing private market funds, investors, and their investments.
 
-Built as a take-home assessment for the Software Engineer role at [Titanbay](https://titanbay.com).
+Built as a take-home assessment for the Senior Software Engineer role at [Titanbay](https://titanbay.com).
 
 ## Tech Stack
 
@@ -148,8 +148,9 @@ This structure keeps each layer focused on a single responsibility. Controllers 
 
 ## Assumptions
 
-- The API spec defines `PUT /funds` with the fund `id` in the request body. I chose to use `PUT /funds/:id` instead, as REST convention identifies resources via the URL. This also prevents any ambiguity around whether the `id` itself can be updated — it cannot, as it's a server-generated UUID. The request body contains only the mutable fields.
+- The [API spec](https://storage.googleapis.com/interview-api-doc-funds.wearebusy.engineering/index.html#funds) defines `PUT /funds` with the fund `id` in the request body. I chose to use `PUT /funds/:id` instead, as REST convention identifies resources via the URL. This also prevents any ambiguity around whether the `id` itself can be updated — it cannot, as it's a server-generated UUID. The request body contains only the mutable fields.
 - All request body fields are treated as required for both POST and PUT endpoints. This aligns with PUT semantics (full resource replacement rather than partial update, which would be PATCH) and POST semantics (all fields needed to create a valid resource). The API spec examples consistently include all fields in every request body.
+- The `GET /funds` response example in the spec shows `"status": "fundraising"` (lowercase), while all other endpoints and the Data Model definition use capitalised values (`Fundraising`, `Investing`, `Closed`). I followed the Data Model definition with capitalised status values for consistency.
 - `investment_date` is a date-only field (no time component), stored as a PostgreSQL `DATE` type
 - Investor email uniqueness is enforced — attempting to create a duplicate returns `409 Conflict`
 - Fund and investor existence is validated before creating an investment — returns `404` if either doesn't exist

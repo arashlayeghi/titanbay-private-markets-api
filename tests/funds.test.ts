@@ -96,6 +96,18 @@ describe('Fund Endpoints', () => {
 
       expect(response.status).toBe(400);
     });
+
+    it('should return 400 when request body contains unrecognized fields', async () => {
+      const response = await request(app).post('/funds').send({
+        name: 'Test Fund',
+        vintage_year: 2025,
+        target_size_usd: 500000000.0,
+        status: 'Fundraising',
+        unexpected_field: 'should not be here',
+      });
+
+      expect(response.status).toBe(400);
+    });
   });
 
   describe('PUT /funds/:id', () => {
