@@ -17,16 +17,7 @@ export const investmentController = {
 
   create: async (req: Request, res: Response): Promise<void> => {
     const fundId: string = req.params.fund_id as string;
-
-    try {
-      const investment = await investmentService.create(fundId, req.body as CreateInvestmentInput);
-      ApiResponse.created(res, investment);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'NotFoundError') {
-        ApiResponse.notFound(res, error.message);
-        return;
-      }
-      throw error;
-    }
+    const investment = await investmentService.create(fundId, req.body as CreateInvestmentInput);
+    ApiResponse.created(res, investment);
   },
 };

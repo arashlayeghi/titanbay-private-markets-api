@@ -10,15 +10,7 @@ export const investorController = {
   },
 
   create: async (req: Request, res: Response): Promise<void> => {
-    try {
-      const investor = await investorService.create(req.body as CreateInvestorInput);
-      ApiResponse.created(res, investor);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'ConflictError') {
-        ApiResponse.conflict(res, error.message);
-        return;
-      }
-      throw error;
-    }
+    const investor = await investorService.create(req.body as CreateInvestorInput);
+    ApiResponse.created(res, investor);
   },
 };

@@ -135,9 +135,9 @@ This structure keeps each layer focused on a single responsibility. Controllers 
 
 ### Error Handling
 
-- **Centralised API response utility** (`ApiResponse`) — ensures consistent response shapes across all endpoints
-- **Global error handler middleware** — catches any unhandled errors and returns a clean 500 response
-- **Business logic errors** (e.g., duplicate email, fund not found) are thrown as named errors in the service layer and mapped to appropriate HTTP status codes in controllers
+- **Custom error classes** (`NotFoundError`, `BadRequestError`, `ConflictError`) — extend a base `AppError` class that carries the HTTP status code, enabling type-safe error handling with `instanceof` checks
+- **Centralised API response utility** (`ApiResponse`) — ensures consistent response shapes across all endpoints, including a generic `error()` method for dynamic status codes
+- **Global error handler middleware** — catches all errors in one place: JSON parse errors return `400`, custom `AppError` instances are mapped to their status codes via `ApiResponse`, and unexpected errors return a clean `500`. This eliminates the need for try/catch blocks in controllers, keeping them focused solely on the happy path
 
 ### Testing
 
@@ -155,6 +155,8 @@ This structure keeps each layer focused on a single responsibility. Controllers 
 - Investor email uniqueness is enforced — attempting to create a duplicate returns `409 Conflict`
 - Fund and investor existence is validated before creating an investment — returns `404` if either doesn't exist
 - The API does not implement authentication/authorisation — this would be a priority addition for production
+- Investments into funds with `Closed` status are rejected with `400 Bad Request`
+- Total committed investments cannot exceed a fund's `target_size_usd` — the API validates remaining capacity before accepting a new investment
 
 ## Scripts
 
