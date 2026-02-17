@@ -48,6 +48,10 @@ done
 echo "🔄 Running database migrations..."
 npx prisma migrate dev --name init 2>/dev/null || npx prisma migrate deploy
 
+# Apply migrations to test database
+echo "🔄 Applying migrations to test database..."
+DATABASE_URL=postgresql://titanbay:titanbay_dev@localhost:5432/titanbay_test?schema=public npx prisma migrate deploy
+
 # Generate Prisma client
 echo "🔧 Generating Prisma client..."
 npx prisma generate
