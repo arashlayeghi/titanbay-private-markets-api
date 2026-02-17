@@ -64,10 +64,10 @@ export const fundService = {
   },
 
   /** Updates a fund by ID. Returns null if fund not found (Prisma P2025) */
-  update: async (data: UpdateFundInput): Promise<FundResponse | null> => {
+  update: async (id: string, data: UpdateFundInput): Promise<FundResponse | null> => {
     try {
       const fund = await prisma.fund.update({
-        where: { id: data.id },
+        where: { id },
         data: {
           name: data.name,
           vintage_year: data.vintage_year,
