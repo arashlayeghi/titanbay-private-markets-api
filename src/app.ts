@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import { fundRoutes } from './routes/fund.routes';
 import { investorRoutes } from './routes/investor.routes';
 import { investmentRoutes } from './routes/investment.routes';
+import { analyticsRoutes } from './routes/analytics.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { ApiResponse } from './utils/apiResponse';
 import { config } from './config';
@@ -24,6 +25,7 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use('/funds', fundRoutes);
 app.use('/investors', investorRoutes);
 app.use('/funds/:fund_id/investments', investmentRoutes);
+app.use('/funds/:fund_id/analytics', analyticsRoutes);
 
 // 404 handler for undefined routes
 app.use((_req: Request, res: Response) => {
